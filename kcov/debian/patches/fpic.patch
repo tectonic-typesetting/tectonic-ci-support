@@ -1,0 +1,25 @@
+Add -fPIC.
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -206,7 +206,7 @@
+ 
+ set (KCOV_LIBRARY_PREFIX "/tmp")
+ 
+-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -g -Wall -D_GLIBCXX_USE_NANOSLEEP -DKCOV_LIBRARY_PREFIX=${KCOV_LIBRARY_PREFIX} -DKCOV_HAS_LIBBFD=${HAS_LIBBFD}")
++set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++0x -g -Wall -D_GLIBCXX_USE_NANOSLEEP -DKCOV_LIBRARY_PREFIX=${KCOV_LIBRARY_PREFIX} -DKCOV_HAS_LIBBFD=${HAS_LIBBFD}")
+ 
+ include_directories(
+ 	include/
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index 73d290b..6437312 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -8,7 +8,7 @@ include_directories(
+ 	${CMAKE_BINARY_DIR}
+ 	../src/include
+ )
+-set (CMAKE_CXX_FLAGS "-std=c++0x -Wall -D_GLIBCXX_USE_NANOSLEEP -DKCOV_LIBRARY_PREFIX=${KCOV_LIBRARY_PREFIX}")
++set (CMAKE_CXX_FLAGS "-std=c++0x -fPIC -Wall -D_GLIBCXX_USE_NANOSLEEP -DKCOV_LIBRARY_PREFIX=${KCOV_LIBRARY_PREFIX}")
+ 
+ add_custom_command (OUTPUT multi-fork-generated.c
+   COMMAND ${CMAKE_SOURCE_DIR}/multi-fork/generate-functions.py ${CMAKE_SOURCE_DIR}/multi-fork/code-template.c 1024 > ${CMAKE_BINARY_DIR}/multi-fork-generated.c
