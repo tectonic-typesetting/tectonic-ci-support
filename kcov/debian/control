@@ -2,8 +2,8 @@ Source: kcov
 Section: devel
 Priority: extra
 Maintainer: Michael Tautschnig <mt@debian.org>
-Build-Depends: debhelper (>= 7.0.50~), libdw-dev, libelf-dev, pkg-config,
- libglib2.0-dev, cmake, python, libjs-handlebars,
+Build-Depends: binutils-dev, debhelper (>= 7.0.50~), libdw-dev, libelf-dev, pkg-config,
+ libglib2.0-dev, libiberty-dev, cmake, python, libjs-handlebars,
  libcurl4-openssl-dev, libjs-jquery
 Standards-Version: 3.9.6
 Homepage: http://simonkagstrom.github.com/kcov/

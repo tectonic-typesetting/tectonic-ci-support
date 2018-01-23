@@ -1,3 +1,15 @@
+kcov (34+tectonicci3) xenial; urgency=medium
+
+  * Try again to get --verify working.
+
+ -- Peter Williams <peter@newton.cx>  Mon, 22 Jan 2018 23:51:00 -0500
+
+kcov (34+tectonicci2) xenial; urgency=medium
+
+  * Add deps to get --verify to work.
+
+ -- Peter Williams <peter@newton.cx>  Mon, 22 Jan 2018 23:41:00 -0500
+
 kcov (34+tectonicci1) xenial; urgency=medium
 
   * Backport new version to xenial for Tectonic CI.
