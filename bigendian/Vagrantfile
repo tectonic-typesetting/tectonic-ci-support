@@ -1,0 +1,13 @@
+# Copyright 2018 the Tectonic Project
+# Licensed under the MIT License.
+
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
+
+Vagrant.configure("2") do |config|
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "8192"
+  end
+
+  config.vm.box = "ubuntu/bionic64"
+  config.vm.provision :shell, path: "outer-provision.sh"
+end

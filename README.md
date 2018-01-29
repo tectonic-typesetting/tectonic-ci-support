@@ -1,9 +1,10 @@
 # Tectonic Continuous Integration (CI) Support
 
-Tectonic uses [Travis CI](https://travis-ci.org/) for continuous integration.
-It has turned out that some pieces of useful CI functionality (e.g. code
-coverage analysis) need extra software support. This repository contains
-support infrastructure for providing this support.
+Tectonic uses [Travis CI](https://travis-ci.org/) and
+[CircleCI](https://circleci.com/) for continuous integration. It has turned
+out that some pieces of useful CI functionality (e.g. code coverage analysis)
+need extra software support. This repository contains support infrastructure
+for providing this support.
 
 At the moment, this repo mostly contains notes and fragments. Hopefully we'll
 tidy it up over time.
@@ -74,3 +75,13 @@ probably keep things covered.
 Note that Debian repackages the original `kcov` source due to
 [DFSG](https://en.wikipedia.org/wiki/Debian_Free_Software_Guidelines) matters,
 but we can afford to be laxer.
+
+
+## Big-endian build chroot
+
+We use CircleCI and some old-fashioned magic to run CI builds of Tectonic on a
+synthetic PowerPC processor, allowing us to test the code’s behavior on a
+big-endian CPU architecture. To do so, we use a pre-baked build
+[chroot](https://en.wikipedia.org/wiki/Chroot) filled with the necessary tools
+and libraries. The [bigendian/](bigendian/README.md) subdirectory contains the
+relevant files and explains in more detail.
