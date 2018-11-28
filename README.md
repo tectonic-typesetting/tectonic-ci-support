@@ -35,8 +35,11 @@ The approximate recipe for backporting other packages is something like:
 1. Run an interactive Docker container using the `ubuntu:xenial` image.
 2. `apt-get update`
 3. `apt-get install ubuntu-dev-tools` (and maybe `emacs24-nox` for development)
-4. Get the PPA GPG key into the Docker container (`docker cp`; `chown`)
-5. `echo DEBSIGN_KEYID=1E73EE55 >~/.devscripts`
+4. Back outside of the container, export your PPA GPG key to a text file:
+   something like `gpg --export-secret-keys --armor 1E73EE55 >key.txt`
+5. Get the PPA GPG key into the Docker container: `docker cp key.ttxt
+   container:/` on the host; `gpg --import </key.txt` in the container.
+5. Still in the container: `echo DEBSIGN_KEYID=1E73EE55 >~/.devscripts`
 6. `export DEBFULLNAME="Peter Williams" DEBEMAIL=peter@newton.cx UBUMAIL=peter@newton.cx`
 7. `backportpackage -u ppa:k-peter/tectonic-ci $packagename`
 
