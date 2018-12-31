@@ -11,7 +11,7 @@ mirror=http://ports.ubuntu.com/
 version=xenial # last one to have ppc
 arch=powerpc
 qemu_arch=ppc
-rust_version=1.27.0
+rust_version=1.31.1
 root=/buildenv-$arch
 
 # The basic Vagrant bionic box has a really small (2 GB) disk, and we fill it
