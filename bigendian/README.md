@@ -42,3 +42,10 @@ the chroot environment is set up and the needed tools are installed.
 
 The script `./make-chroot.sh` creates the Vagrant box and generates the chroot
 tarball, which is saved as `buildenv-powerpc.tar.gz`.
+
+At first I uploaded the generated files to the Harvard Dataverse service under
+[this dataset](https://doi.org/10.7910/DVN/VM4ZZ3), with names of the form
+`tectonic-buildenv-ppc-YYYYMMDD.tar.gz`. For the most recent version,
+Dataverse was acting up, so I uploaded the file as a release on the GitHub
+repo
+[here](https://github.com/tectonic-typesetting/tectonic-ci-support/releases/tag/production).
