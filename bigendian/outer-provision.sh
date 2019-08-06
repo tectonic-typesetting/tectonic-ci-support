@@ -1,5 +1,5 @@
 #! /bin/bash
-# Copyright 2018 the Tectonic Project
+# Copyright 2018-2019 the Tectonic Project
 # Licensed under the MIT License.
 #
 # Provision the Ubuntu VM that we will use to make a PowerPC install that is
@@ -11,7 +11,7 @@ mirror=http://ports.ubuntu.com/
 version=xenial # last one to have ppc
 arch=powerpc
 qemu_arch=ppc
-rust_version=1.31.1
+rust_version=1.36.0
 root=/buildenv-$arch
 
 # The basic Vagrant bionic box has a really small (2 GB) disk, and we fill it
