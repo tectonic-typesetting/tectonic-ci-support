@@ -5,9 +5,6 @@ set -e
 TARGET_ARCH="$1"
 SUDO_APK=abuild-apk
 
-# optional cross build packages
-KERNEL_PKG="linux-firmware linux-vanilla"
-
 # get abuild configurables
 [ -e /usr/share/abuild/functions.sh ] || (echo "abuild not found" ; exit 1)
 CBUILDROOT="$(CTARGET=$TARGET_ARCH . /usr/share/abuild/functions.sh ; echo $CBUILDROOT)"
@@ -56,17 +53,22 @@ EOF
 	return 1
 fi
 
+set -x # XXXXXXXXXXX
+
 if [ ! -d "$CBUILDROOT" ]; then
 	msg "Creating sysroot in $CBUILDROOT"
 	mkdir -p "$CBUILDROOT/etc/apk/keys"
-	cp -a /etc/apk/keys/* "$CBUILDROOT/etc/apk/keys"
+	cp /etc/apk/keys/* "$CBUILDROOT/etc/apk/keys"
 	${SUDO_APK} add --quiet --initdb --arch $TARGET_ARCH --root $CBUILDROOT
 fi
 
 msg "Building cross-compiler"
 
 # Build and install cross binutils (--with-sysroot)
-CTARGET=$TARGET_ARCH BOOTSTRAP=nobase APKBUILD=$(apkbuildname binutils) abuild -r
+which abuild
+ls -l /mini-aports/main/binutils/APKBUILD
+
+CTARGET=$TARGET_ARCH BOOTSTRAP=nobase APKBUILD=$(apkbuildname binutils) abuild -rv
 
 if ! CHOST=$TARGET_ARCH BOOTSTRAP=nolibc APKBUILD=$(apkbuildname musl) abuild up2date 2>/dev/null; then
 	# C-library headers for target
@@ -95,17 +97,7 @@ apk info --quiet --installed --root "$CBUILDROOT" libgcc libstdc++ musl-dev || \
 	${SUDO_APK} --root "$CBUILDROOT" add --repository "$REPODEST/main" libgcc libstdc++ musl-dev
 
 # ordered cross-build
-for PKG in fortify-headers linux-headers musl libc-dev pkgconf zlib \
-	   openssl ca-certificates libbsd libtls-standalone busybox busybox-initscripts binutils make \
-	   apk-tools file \
-	   gmp mpfr3 mpc1 isl cloog gcc \
-	   openrc alpine-conf alpine-baselayout alpine-keys alpine-base build-base \
-	   attr libcap patch sudo acl fakeroot tar \
-	   pax-utils lzip abuild ncurses libedit openssh \
-	   libcap-ng util-linux libaio lvm2 popt xz \
-	   json-c argon2 cryptsetup kmod lddtree mkinitfs \
-	   community/go libffi community/ghc \
-	   $KERNEL_PKG ; do
+for PKG in fortify-headers linux-headers musl libc-dev  ; do
 
 	CHOST=$TARGET_ARCH BOOTSTRAP=bootimage APKBUILD=$(apkbuildname $PKG) abuild -r
 
