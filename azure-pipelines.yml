@@ -20,3 +20,4 @@ jobs:
 - template: .azure-pipelines/cross-builder.yml
   parameters:
     platform: arm-unknown-linux-musleabihf
+    platform_uscore: arm_unknown_linux_musleabihf

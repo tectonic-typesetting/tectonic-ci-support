@@ -3,7 +3,7 @@
 
 jobs:
 
-- job: cross_builder_${{ parameters.platform }}
+- job: cross_builder_${{ parameters.platform_uscore }}
   pool:
     vmImage: 'ubuntu-18.04'
 
