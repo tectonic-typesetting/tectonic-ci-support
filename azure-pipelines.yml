@@ -1,0 +1,18 @@
+# Copyright 2019 the Tectonic Project
+# Licensed under the MIT License.
+
+# Environment variables:
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables
+
+trigger:
+  branches:
+    include:
+    - master
+
+pr:
+- master
+
+jobs:
+- template: .azure-pipelines/custom-cross.yml
+  parameters:
+    tag: v0.1.16
