@@ -40,7 +40,7 @@ COPY --from=chroot / /alpine
 # Privileged Ubuntu setup
 ADD 04_ubuntu_priv_setup.sh /
 ADD enter-chroot /alpine/
-RUN sh /04_ubuntu_priv_setup.sh
+RUN sh /04_ubuntu_priv_setup.sh "$UID"
 
 # Unprivileged Ubuntu setup
 ADD toolwrapper.sh.in /alpine/home/rust/
