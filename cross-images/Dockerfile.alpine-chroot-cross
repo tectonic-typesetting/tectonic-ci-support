@@ -1,0 +1,63 @@
+# Copyright 2019 The Tectonic Project
+# Licensed under the MIT License.
+
+# We do some fancy Docker gymnastics to set up an Alpine instance that then
+# becomes a chroot inside an Ubuntu install.
+
+FROM alpine:3.10 AS chroot
+
+ARG UID=1000
+ARG rust_platform
+ARG alpine_platform
+ARG alpine_arch
+ARG qemu_arch
+
+# Privileged Alpine setup: make a user that will build the desired cross compiler.
+RUN apk update && apk add --update alpine-sdk
+ADD 01_alpine_priv_setup.sh /
+RUN sh /01_alpine_priv_setup.sh "$UID"
+
+# Unprivileged Alpine setup: do the build. This makes changes in the $APORTS
+# directory, so it must be writable by the `rust` user.
+COPY --chown=rust:abuild mini-aports/ /mini-aports/
+ADD --chown=rust:abuild 02_alpine_unpriv_setup.sh /home/rust
+RUN sudo -u rust sh /home/rust/02_alpine_unpriv_setup.sh $alpine_arch
+
+# Now populate the Alpine cross sysroot with the packages Tectonic needs.
+ADD 03_alpine_populate.sh /
+RUN sh /03_alpine_populate.sh $alpine_arch
+
+# We're done setting up Alpine. Now switch to an Ubuntu image and embed
+# the Alpine system in it.
+FROM ubuntu:18.04
+ARG UID=1000
+ARG rust_platform
+ARG alpine_platform
+ARG alpine_arch
+ARG qemu_arch
+COPY --from=chroot / /alpine
+
+# Privileged Ubuntu setup
+ADD 04_ubuntu_priv_setup.sh /
+ADD enter-chroot /alpine/
+RUN sh /04_ubuntu_priv_setup.sh "$UID"
+
+# Unprivileged Ubuntu setup
+ADD toolwrapper.sh.in /alpine/home/rust/
+ADD linkwrapper.sh.in /alpine/home/rust/
+ADD --chown=rust 05_ubuntu_unpriv_setup.sh /alpine/home/rust/
+RUN sudo -iu rust sh /alpine/home/rust/05_ubuntu_unpriv_setup.sh $rust_platform $alpine_platform /usr/bin/$alpine_platform-
+
+# QEMU install script copied from rust-embedded/cross's Docker images
+COPY qemu.sh /
+RUN /qemu.sh $qemu_arch
+
+# Set up the custom environment variables we need -- some of their names are
+# build args, so we can't use `ENV` as far as I can tell.
+COPY 06_setup_env.sh /
+RUN sh /06_setup_env.sh $rust_platform $alpine_platform $alpine_arch $qemu_arch
+
+WORKDIR /project
+ADD entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["cargo", "test", "--release", "--all"]

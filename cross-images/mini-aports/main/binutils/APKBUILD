@@ -1,0 +1,116 @@
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=binutils
+pkgver=2.32
+pkgrel=0
+pkgdesc="Tools necessary to build programs"
+url="https://www.gnu.org/software/binutils/"
+makedepends_build="bison flex texinfo"
+makedepends_host="zlib-dev"
+makedepends="$makedepends_build $makedepends_host"
+arch="all"
+license="GPL-2.0 GPL-3.0-or-later LGPL-2.0 BSD"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-gold"
+source="https://ftp.gnu.org/gnu/$pkgname/$pkgname-$pkgver.tar.bz2
+	binutils-ld-fix-static-linking.patch
+	gold-mips.patch
+	"
+builddir="$srcdir/$pkgname-$pkgver"
+
+if [ "$CHOST" != "$CTARGET" ]; then
+	pkgname="$pkgname-$CTARGET_ARCH"
+	subpackages=""
+	sonameprefix="$pkgname:"
+fi
+
+# secfixes:
+#   2.32-r0:
+#   - CVE-2018-19931
+#   - CVE-2018-19932
+#   - CVE-2018-20002
+#   - CVE-2018-20712
+#   2.28-r1:
+#   - CVE-2017-7614
+
+build() {
+	local _sysroot=/
+	local _cross_configure="--enable-install-libiberty --enable-shared"
+	local _arch_configure=""
+
+	if [ "$CHOST" != "$CTARGET" ]; then
+		_sysroot="$CBUILDROOT"
+		_cross_configure="--disable-install-libiberty"
+	fi
+
+	if [ "$CTARGET_ARCH" = "x86_64" ]; then
+		_arch_configure="--enable-targets=x86_64-pep"
+	fi
+
+	case "$CTARGET_ARCH" in
+	mips*)  _hash_style_configure="--enable-default-hash-style=sysv" ;;
+	*)      _hash_style_configure="--enable-default-hash-style=gnu"	;;
+	esac
+
+	cd "$builddir"
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--target=$CTARGET \
+		--with-build-sysroot="$CBUILDROOT" \
+		--with-sysroot=$_sysroot \
+		--prefix=/usr \
+		--mandir=/usr/share/man \
+		--infodir=/usr/share/info \
+		--disable-multilib \
+		--enable-ld=default \
+		--enable-gold=yes \
+		--enable-64-bit-bfd \
+		--enable-plugins \
+		--enable-relro \
+		--enable-deterministic-archives \
+		$_cross_configure \
+		$_arch_configure \
+		$_hash_style_configure \
+		--with-pic \
+		--disable-werror \
+		--disable-nls \
+		--with-mmap \
+		--with-system-zlib
+	make
+}
+
+package() {
+	cd "$builddir"
+	make install DESTDIR="$pkgdir"
+	if [ -d "$pkgdir"/usr/lib64 ]; then
+		mv "$pkgdir"/usr/lib64/* "$pkgdir"/usr/lib/
+		rmdir "$pkgdir"/usr/lib64
+	fi
+	if [ "$CHOST" != "$CTARGET" ]; then
+		# creating cross tools: remove any files that would conflict
+		# with the native tools, or other cross tools
+		rm -r "$pkgdir"/usr/share
+		rm -f "$pkgdir"/usr/lib/libiberty.a
+	fi
+}
+
+libs() {
+	pkgdesc="Runtime libraries from binutils - libbfd and libopcodes"
+
+	mkdir -p "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/lib*.so "$subpkgdir"/usr/lib/
+}
+
+gold() {
+	pkgdesc="GNU binutils - gold linker"
+
+	if [ -e "$pkgdir"/usr/bin/ld.gold ]; then
+		mkdir -p "$subpkgdir"/usr/bin
+		mv "$pkgdir"/usr/bin/ld.gold "$subpkgdir"/usr/bin
+	fi
+	mkdir -p "$subpkgdir"/usr/$CTARGET/bin
+	mv "$pkgdir"/usr/$CTARGET/bin/ld.gold "$subpkgdir"/usr/$CTARGET/bin/ld.gold
+}
+
+sha512sums="99ec7ed2b5ebfd3ac16cecb1567ec4a72f81ac30717002d601708f7547b2f8122ffcce076c986f22894aede33c54c73012210a4e973ba9b6e2d87a242a2bee12  binutils-2.32.tar.bz2
+ecee33b0e435aa704af1c334e560f201638ff79e199aa11ed78a72f7c9b46f85fbb227af5748e735fd681d1965fcc42ac81b0c8824e540430ce0c706c81e8b49  binutils-ld-fix-static-linking.patch
+f55cf2e0bf82f97583a1abe10710e4013ecf7d64f1da2ef8659a44a06d0dd8beaf58dab98a183488ea137f03e32d62efc878d95f018f836f8cec870bc448556f  gold-mips.patch"
