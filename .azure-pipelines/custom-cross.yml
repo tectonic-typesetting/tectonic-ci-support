@@ -19,7 +19,7 @@ jobs:
       inputs:
         containerRegistry: |
           pkgw@DockerHub
-        repository: ttcross
+        repository: tectonictypesetting/ttcross
         tags: |
           ${{ parameters.tag }}
           latest
