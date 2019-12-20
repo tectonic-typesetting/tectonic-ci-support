@@ -17,8 +17,8 @@ jobs:
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI'))
       displayName: Push image to Hub
       inputs:
-        containerRegistry: |
-          pkgw@DockerHub
+        command: push
+        containerRegistry: pkgw@DockerHub
         repository: tectonictypesetting/ttcross
         tags: |
           ${{ parameters.tag }}
