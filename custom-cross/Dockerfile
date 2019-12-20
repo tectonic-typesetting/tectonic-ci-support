@@ -17,10 +17,12 @@ RUN TERM=dumb \
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs |sh -s -- -y
 
 ADD 001-privileges.patch /
+ADD 002-rw-project.patch /
 RUN git clone https://github.com/rust-embedded/cross.git \
     && cd cross \
     && git checkout $tag \
-    && patch -p1 -i /001-privileges.patch
+    && patch -p1 -i /001-privileges.patch \
+    && patch -p1 -i /002-rw-project.patch
 
 RUN cd cross && PATH=$HOME/.cargo/bin:$PATH cargo install --force --path .
 
