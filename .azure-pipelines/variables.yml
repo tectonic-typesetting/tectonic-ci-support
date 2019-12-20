@@ -1,0 +1,11 @@
+# Copyright 2019 the Tectonic Project
+# Licensed under the MIT License.
+
+# This files sets global variables that are shared among various pipelines.
+
+variables:
+  linux_image: 'ubuntu-18.04'
+  cross_tag: 'v0.1.16'
+  cross_targets:
+  - kabob: 'arm-unknown-linux-musleabihf'
+    snake: 'arm_unknown_linux_musleabihf'

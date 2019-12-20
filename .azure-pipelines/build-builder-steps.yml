@@ -1,0 +1,14 @@
+# Copyright 2019 the Tectonic Project
+# Licensed under the MIT License.
+
+# Steps to build one Docker image for building Tectonic with `cross`.
+
+parameters:
+- name: platform
+  type: string
+
+steps:
+- script: |
+    cd cross-images
+    ./build.${{ parameters.platform }}.sh
+  displayName: Build crossbuild:${{ parameters.platform }} Docker image

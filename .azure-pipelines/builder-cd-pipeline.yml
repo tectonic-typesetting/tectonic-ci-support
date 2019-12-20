@@ -1,0 +1,50 @@
+# Copyright 2019 the Tectonic Project
+# Licensed under the MIT License.
+
+# Triggered when the master branch is updated with commits that modify files
+# in the "cross-images" subdirectory. Builds the Docker images and deploys
+# them to DockerHub.
+
+trigger:
+  branches:
+    exclude:
+    - '*'
+
+pr:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - cross-images/
+
+variables:
+- template: variables.yml
+
+jobs:
+- job: build_builders
+  pool:
+    vmImage: ${{ variables.linux_image }}
+
+  strategy:
+    matrix:
+      ${{ each target in variables.cross_targets }}:
+        ${{ target.snake }}:
+          target_kabob: ${{ target.kabob }}
+          target_snake: ${{ target.snake }}
+
+  steps:
+
+  # Build images as in the CI pipeline ...
+  - template: build-builder-steps.yml
+    parameters:
+      platform: $(target_kabob)
+
+  # ... but also deploy to DockerHub
+  - task: Docker@2
+    displayName: Push crossbuild:$(target_kabob) image to DockerHub
+    inputs:
+      command: push
+      containerRegistry: pkgw@DockerHub
+      repository: tectonictypesetting/crossbuild
+      tags: $(target_kabob)

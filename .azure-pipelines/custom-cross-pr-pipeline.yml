@@ -1,0 +1,30 @@
+# Copyright 2019 the Tectonic Project
+# Licensed under the MIT License.
+
+# Triggered when a pull request is issued against the master branch that
+# modifies files in the "custom-cross" subdirectory. Does a test build of that
+# Docker image.
+
+trigger:
+  branches:
+    exclude:
+    - '*'
+
+pr:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - custom-cross/
+
+variables:
+- template: variables.yml
+
+jobs:
+- job: build_custom_cross
+  pool:
+    vmImage: ${{ variables.linux_image }}
+
+  steps:
+  - template: build-custom-cross-steps.yml

@@ -1,0 +1,39 @@
+# Copyright 2019 the Tectonic Project
+# Licensed under the MIT License.
+
+# Triggered when a pull request is issued against the master branch that
+# modifies files in the "cross-images" subdirectory. Does a test build of the
+# Docker images.
+
+trigger:
+  branches:
+    exclude:
+    - '*'
+
+pr:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - cross-images/
+
+variables:
+- template: variables.yml
+
+jobs:
+- job: build_builders
+  pool:
+    vmImage: ${{ variables.linux_image }}
+
+  strategy:
+    matrix:
+      ${{ each target in variables.cross_targets }}:
+        ${{ target.snake }}:
+          target_kabob: ${{ target.kabob }}
+          target_snake: ${{ target.snake }}
+
+  steps:
+  - template: build-builder-steps.yml
+    parameters:
+      platform: $(target_kabob)

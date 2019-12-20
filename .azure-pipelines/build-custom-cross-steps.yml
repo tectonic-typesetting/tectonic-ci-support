@@ -1,0 +1,8 @@
+# Copyright 2019 the Tectonic Project
+# Licensed under the MIT License.
+
+steps:
+- script: |
+    docker build -t tectonictypesetting/ttcross:${{ variables.cross_tag }} custom-cross/
+    docker tag tectonictypesetting/ttcross:${{ variables.cross_tag }} tectonictypesetting/ttcross:latest
+  displayName: Build ttcross Docker image (tag ${{ variables.cross_tag }})

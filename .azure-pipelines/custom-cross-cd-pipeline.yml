@@ -1,0 +1,38 @@
+# Copyright 2019 the Tectonic Project
+# Licensed under the MIT License.
+
+# Triggered when the master branch is updated with commits that modify files
+# in the "custom-cross" subdirectory. Builds the Docker image and deploys it
+# to DockerHub.
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - custom-cross/
+
+variables:
+- template: variables.yml
+
+jobs:
+- job: build_and_deploy_custom_cross
+  pool:
+    vmImage: ${{ variables.linux_image }}
+
+  steps:
+
+  # Build as in CI ...
+  - template: build-custom-cross-steps.yml
+
+  # ... but also deploy
+  - task: Docker@2
+    displayName: Push ttcross image to DockerHub
+    inputs:
+      command: push
+      containerRegistry: pkgw@DockerHub
+      repository: tectonictypesetting/ttcross
+      tags: |
+        ${{ variables.cross_tag }}
+        latest
