@@ -28,3 +28,5 @@ jobs:
 
   steps:
   - template: build-custom-cross-steps.yml
+    parameters:
+      cross_tag: ${{ variables.cross_tag }}
