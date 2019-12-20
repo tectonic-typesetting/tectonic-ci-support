@@ -22,4 +22,4 @@ jobs:
         repository: tectonictypesetting/crossbuild
         tags: |
           ${{ parameters.platform }}
-          latest
+
