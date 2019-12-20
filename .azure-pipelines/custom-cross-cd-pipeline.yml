@@ -25,6 +25,8 @@ jobs:
 
   # Build as in CI ...
   - template: build-custom-cross-steps.yml
+    parameters:
+      cross_tag: ${{ variables.cross_tag }}
 
   # ... but also deploy
   - task: Docker@2
