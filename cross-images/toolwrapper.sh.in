@@ -41,4 +41,4 @@ done
 # ready to go!
 
 ### set -x # <= for debugging
-exec /alpine/enter-chroot -u rust sh -c "cd $curdir && \"\$@\"" -- "$exename" "${args[@]}"
+exec /alpine/enter-chroot -u $(whoami) sh -c "cd $curdir && \"\$@\"" -- "$exename" "${args[@]}"
