@@ -19,6 +19,8 @@ useradd rust --user-group --home-dir /alpine/home/rust --shell /bin/bash --group
 
 chmod +x /alpine/enter-chroot
 
-echo 'rust ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/rust-nopasswd
+# The container might be executed as a different UID than we've assigned to
+# `rust`, so we have to be prepared to anyone to sudo.
+echo 'ALL ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/partytime
 
 rm -f "$0"  # self-destruct
