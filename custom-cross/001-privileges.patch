@@ -1,0 +1,15 @@
+diff --git a/src/docker.rs b/src/docker.rs
+index 4ac2733..2ebf59a 100644
+--- a/src/docker.rs
++++ b/src/docker.rs
+@@ -111,7 +111,9 @@ pub fn run(target: &Target,
+ 
+     docker
+         .arg("--rm")
+-        .args(&["--user", &format!("{}:{}", id::user(), id::group())])
++        .arg("--privileged")
++        .args(&["-e", &format!("HOST_UID={}", id::user())])
++        .args(&["-e", &format!("HOST_GID={}", id::group())])
+         .args(&["-e", "XARGO_HOME=/xargo"])
+         .args(&["-e", "CARGO_HOME=/cargo"])
+         .args(&["-e", "CARGO_TARGET_DIR=/target"])
