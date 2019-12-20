@@ -13,6 +13,8 @@ trigger:
     include:
     - custom-cross/
 
+pr: none
+    
 variables:
 - template: variables.yml
 
