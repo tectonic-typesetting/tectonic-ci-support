@@ -6,6 +6,4 @@
 variables:
   linux_image: 'ubuntu-18.04'
   cross_tag: 'v0.1.16'
-  cross_targets:
-  - kabob: 'arm-unknown-linux-musleabihf'
-    snake: 'arm_unknown_linux_musleabihf'
+  target_arm_unknown_linux_musleabihf: 'arm-unknown-linux-musleabihf'

@@ -28,10 +28,11 @@ jobs:
 
   strategy:
     matrix:
-      ${{ each target in variables.cross_targets }}:
-        ${{ target.snake }}:
-          target_kabob: ${{ target.kabob }}
-          target_snake: ${{ target.snake }}
+      ${{ each vpair in variables }}:
+        ${{ if startsWith(vpair.key, 'target_') }}:
+          ${{ vpair.key }}:
+            target_id: ${{ vpair.key }}
+            target_kabob: ${{ vpair.value }}
 
   steps:
   - template: build-builder-steps.yml
