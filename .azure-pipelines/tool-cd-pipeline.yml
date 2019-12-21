@@ -47,7 +47,9 @@ jobs:
 
   # .. but also deploy the tool using itself
   - script: |
-      set -e
+      set -ex
+      pwd
+      ls
       cd target/release
       tarname="ttcitool-latest-${PLATFORM}.tar.gz"
       tar czf "${tarname}" ttcitool
