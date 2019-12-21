@@ -53,7 +53,7 @@ jobs:
       tar czf "${tarname}" ttcitool
       ./ttcitool upload-gh-artifact --tag=production "${tarname}"
     displayName: Upload tool to GitHub (non-Windows)
-    condition: ne(variables('Agent.OS'), 'Windows_NT')
+    condition: ne(variables['Agent.OS'], 'Windows_NT')
     env:
       PLATFORM: $(platform)
 
@@ -62,6 +62,6 @@ jobs:
       copy ttcitool.exe ttcitool-latest-%PLATFORM%.exe
       .\ttcitool.exe upload-gh-artifact --tag=production ttcitool-latest-%PLATFORM%.exe
     displayName: Upload tool to GitHub (Windows)
-    condition: eq(variables('Agent.OS'), 'Windows_NT')
+    condition: eq(variables['Agent.OS'], 'Windows_NT')
     env:
       PLATFORM: $(platform)
