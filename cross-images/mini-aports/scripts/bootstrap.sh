@@ -53,8 +53,6 @@ EOF
 	return 1
 fi
 
-set -x # XXXXXXXXXXX
-
 if [ ! -d "$CBUILDROOT" ]; then
 	msg "Creating sysroot in $CBUILDROOT"
 	mkdir -p "$CBUILDROOT/etc/apk/keys"
@@ -65,10 +63,7 @@ fi
 msg "Building cross-compiler"
 
 # Build and install cross binutils (--with-sysroot)
-which abuild
-ls -l /mini-aports/main/binutils/APKBUILD
-
-CTARGET=$TARGET_ARCH BOOTSTRAP=nobase APKBUILD=$(apkbuildname binutils) abuild -rv
+CTARGET=$TARGET_ARCH BOOTSTRAP=nobase APKBUILD=$(apkbuildname binutils) abuild -r
 
 if ! CHOST=$TARGET_ARCH BOOTSTRAP=nolibc APKBUILD=$(apkbuildname musl) abuild up2date 2>/dev/null; then
 	# C-library headers for target
