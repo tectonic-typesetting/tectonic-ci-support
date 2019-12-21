@@ -1,0 +1,44 @@
+# Copyright 2019 the Tectonic Project
+# Licensed under the MIT License.
+
+# Triggered when a pull request is issued against the master branch that
+# modifies files in the "tool" subdirectory. Does test builds of the helper
+# tool on the supported platforms.
+
+trigger:
+  branches:
+    exclude:
+    - '*'
+
+pr:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - tool/
+
+variables:
+- template: variables.yml
+
+jobs:
+- job: build_tool
+  strategy:
+    matrix:
+      linux-stable:
+        imageName: ${{ variables.linux_image }}
+        toolchain: stable
+      macos-stable:
+        imageName: ${{ variables.macos_image }}
+        toolchain: stable
+      windows-stable:
+        imageName: ${{ variables.windows_image }}
+        toolchain: stable
+
+  pool:
+    vmImage: $(imageName)
+
+  steps:
+  - template: build-tool-steps.yml
+    parameters:
+      rustup_toolchain: $(toolchain)
