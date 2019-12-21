@@ -8,7 +8,7 @@ root=/home/rust/sysroot-$TARGET_ARCH
 
 # Packages for other architectures are signed with other keys that we need to load up.
 cd /etc/apk/keys
-for fp in 524d27bb ; do
+for fp in 4d07755e 524d27bb 58199dcc 58cbb476 58e4f17d ; do
     wget https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-$fp.rsa.pub
 done
 
