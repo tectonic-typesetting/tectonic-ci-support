@@ -51,7 +51,7 @@ jobs:
       cd tool/target/release
       tarname="ttcitool-latest-${PLATFORM}.tar.gz"
       tar czf "${tarname}" ttcitool
-      ./ttcitool upload-gh-artifact --tag=production "${tarname}"
+      ./ttcitool upload-gh-artifact --overwrite --tag=production "${tarname}"
     displayName: Upload tool to GitHub (non-Windows)
     condition: ne(variables['Agent.OS'], 'Windows_NT')
     env:
@@ -61,7 +61,7 @@ jobs:
   - script: |
       cd tool\target\release
       copy ttcitool.exe ttcitool-latest-%PLATFORM%.exe
-      .\ttcitool.exe upload-gh-artifact --tag=production ttcitool-latest-%PLATFORM%.exe
+      .\ttcitool.exe upload-gh-artifact --overwrite --tag=production ttcitool-latest-%PLATFORM%.exe
     displayName: Upload tool to GitHub (Windows)
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     env:

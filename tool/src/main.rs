@@ -2,7 +2,7 @@
 //! across different platforms.
 
 use failure::{format_err, Error};
-use json::object;
+use json::{object, JsonValue};
 use std::{env, fs::File, path::PathBuf};
 use structopt::StructOpt;
 
@@ -110,22 +110,19 @@ impl GitHubInformation {
         format!("https://api.github.com/repos/{}/{}", self.slug, rest)
     }
 
-    /// Get the upload URL for the release, possibly creating it. We can't
-    /// mark the release as a draft, because then the API doesn't return any
-    /// information for it.
-    fn get_upload_url(&self, client: &mut reqwest::blocking::Client) -> Result<String, Error> {
+    /// Get information about the release, possibly creating it in the
+    /// process. We can't mark the release as a draft, because then the API
+    /// doesn't return any information for it.
+    fn get_release_metadata(
+        &self,
+        client: &mut reqwest::blocking::Client,
+    ) -> Result<JsonValue, Error> {
         // Does the release already exist?
 
         let query_url = self.api_url(&format!("releases/tags/{}", self.tag));
         let resp = client.get(&query_url).send()?;
         if resp.status().is_success() {
-            let mut parsed = json::parse(&resp.text()?)?;
-
-            if let Some(s) = parsed["upload_url"].take_string() {
-                // Return value includes template `{?name,label}` at the end.
-                let v: Vec<&str> = s.split('{').collect();
-                return Ok(v[0].into());
-            }
+            return Ok(json::parse(&resp.text()?)?);
         }
 
         // No. Looks like we have to create it. XXX: some hardcoded tag
@@ -157,7 +154,7 @@ impl GitHubInformation {
             .body(json::stringify(release_info))
             .send()?;
         let status = resp.status();
-        let mut parsed = json::parse(&resp.text()?)?;
+        let parsed = json::parse(&resp.text()?)?;
 
         if status.is_success() {
             println!("info: created the release");
@@ -169,19 +166,18 @@ impl GitHubInformation {
             // XXXX resend initial request???
         }
 
-        if let Some(s) = parsed["upload_url"].take_string() {
-            let v: Vec<&str> = s.split('{').collect();
-            return Ok(v[0].into());
-        }
-
-        Err(format_err!(
-            "no upload_url item in GitHub API release creation response (handle failure case?)"
-        ))
+        Ok(parsed)
     }
 }
 
 #[derive(Debug, StructOpt)]
 pub struct UploadGitHubReleaseArtifactOptions {
+    #[structopt(
+        long = "overwrite",
+        help = "Overwrite the artifact if it already exists in the release (default: error out)"
+    )]
+    overwrite: bool,
+
     #[structopt(
         long = "name",
         help = "The artifact name to use in the release (defaults to input file basename)"
@@ -219,9 +215,49 @@ impl UploadGitHubReleaseArtifactOptions {
                 .to_owned(),
         };
 
-        let upload_url = info.get_upload_url(&mut client)?;
+        // Get information about the release
+
+        let mut metadata = info.get_release_metadata(&mut client)?;
+        let upload_url = metadata["upload_url"]
+            .take_string()
+            .ok_or_else(|| format_err!("no upload_url in release metadata?"))?;
+        let upload_url = {
+            // The returned value includes template `{?name,label}` at the end.
+            let v: Vec<&str> = upload_url.split('{').collect();
+            v[0].to_owned()
+        };
+
         println!("info: upload url = {}", upload_url);
 
+        // If we're in overwrite mode, delete the artifact if it already
+        // exists. This is racy, but the API doesn't give us a better method.
+
+        if self.overwrite {
+            for asset_info in metadata["assets"].members() {
+                // The `json` docs make it seem like I should just be able to
+                // write `asset_info["name"] == name`, but empirically that's
+                // not working.
+                if asset_info["name"].as_str() == Some(&name) {
+                    println!("info: deleting preexisting asset (id {})", asset_info["id"]);
+
+                    let del_url = info.api_url(&format!("releases/assets/{}", asset_info["id"]));
+                    let resp = client.delete(&del_url).send()?;
+                    let status = resp.status();
+
+                    if !status.is_success() {
+                        println!("error: API response: {}", resp.text()?);
+                        return Err(format_err!(
+                            "deletion of pre-existing asset {} failed",
+                            name
+                        ));
+                    }
+                }
+            }
+        }
+
+        // Ready to upload now.
+
+        println!("info: uploading {} => {}", self.path.display(), name);
         let url = reqwest::Url::parse_with_params(&upload_url, &[("name", &name)])?;
         let resp = client
             .post(url)
