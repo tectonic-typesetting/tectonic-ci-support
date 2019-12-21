@@ -1,0 +1,16 @@
+[package]
+name = "ttcitool"
+version = "0.1.0"
+authors = ["Peter Williams <peter@newton.cx>"]
+edition = "2018"
+description = """
+A command-line tool to assist in continuous integration and deployment
+for the Tectonic project.
+"""
+license = "MIT"
+
+[dependencies]
+failure = "0.1"
+json = "0.12"
+reqwest = { version = "0.10.0-alpha.2", features = ["blocking"] }
+structopt = "0.3"
