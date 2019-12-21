@@ -80,6 +80,21 @@ impl GitHubInformation {
                 tag,
                 token,
             }
+        } else if let Some(slug) = maybe_var("APPVEYOR_REPO_NAME")? {
+            println!("info: looks like we are running on AppVeyor");
+            let commit_sha = require_var("APPVEYOR_REPO_COMMIT")?;
+
+            let tag = match maybe_tag {
+                Some(t) => t,
+                None => require_var("APPVEYOR_REPO_TAG_NAME")?,
+            };
+
+            GitHubInformation {
+                commit_sha,
+                slug,
+                tag,
+                token,
+            }
         } else {
             return Err(format_err!(
                 "could not determine build context from environment; set TRAVIS_{{COMMIT,TAG,REPO_SLUG}}"
