@@ -47,10 +47,8 @@ jobs:
 
   # .. but also deploy the tool using itself
   - script: |
-      set -ex
-      pwd
-      ls
-      cd target/release
+      set -xeuo pipefail
+      cd tool/target/release
       tarname="ttcitool-latest-${PLATFORM}.tar.gz"
       tar czf "${tarname}" ttcitool
       ./ttcitool upload-gh-artifact --tag=production "${tarname}"
@@ -60,7 +58,7 @@ jobs:
       PLATFORM: $(platform)
 
   - script: |
-      cd target\release
+      cd tool\target\release
       copy ttcitool.exe ttcitool-latest-%PLATFORM%.exe
       .\ttcitool.exe upload-gh-artifact --tag=production ttcitool-latest-%PLATFORM%.exe
     displayName: Upload tool to GitHub (Windows)
