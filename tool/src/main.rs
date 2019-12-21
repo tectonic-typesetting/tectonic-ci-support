@@ -37,32 +37,43 @@ struct GitHubInformation {
 }
 
 impl GitHubInformation {
-    fn new() -> Result<Self, Error> {
+    fn new(maybe_tag: Option<String>) -> Result<Self, Error> {
         let token = require_var("GITHUB_TOKEN")?;
 
-        let info = if let Some(tag) = maybe_var("TRAVIS_TAG")? {
+        let info = if let Some(slug) = maybe_var("TRAVIS_REPO_SLUG")? {
             println!("info: looks like we are running on Travis");
-            let slug = require_var("TRAVIS_REPO_SLUG")?;
             let commit_sha = require_var("TRAVIS_COMMIT")?;
+
+            let tag = match maybe_tag {
+                Some(t) => t,
+                None => require_var("TRAVIS_TAG")?,
+            };
+
             GitHubInformation {
                 commit_sha,
                 slug,
                 tag,
                 token,
             }
-        } else if let Some(source_branch) = maybe_var("BUILD_SOURCEBRANCH")? {
+        } else if let Some(slug) = maybe_var("BUILD_REPOSITORY_NAME")? {
             println!("info: looks like we are running on Azure Pipelines");
-
-            let tag = source_branch.trim_start_matches("refs/tags/").to_owned();
-            if tag == source_branch {
-                return Err(format_err!(
-                    "un-tag-like value for $BUILD_SOURCEBRANCH: {}",
-                    source_branch
-                ));
-            }
-
-            let slug = require_var("BUILD_REPOSITORY_NAME")?;
             let commit_sha = require_var("BUILD_SOURCEVERSION")?;
+
+            let tag = match maybe_tag {
+                Some(t) => t,
+                None => {
+                    let source_branch = require_var("BUILD_SOURCEBRANCH")?;
+                    let trimmed = source_branch.trim_start_matches("refs/tags/").to_owned();
+                    if trimmed == source_branch {
+                        return Err(format_err!(
+                            "un-tag-like value for $BUILD_SOURCEBRANCH: {}",
+                            source_branch
+                        ));
+                    }
+                    trimmed
+                }
+            };
+
             GitHubInformation {
                 commit_sha,
                 slug,
@@ -177,6 +188,12 @@ pub struct UploadGitHubReleaseArtifactOptions {
     )]
     name: Option<String>,
 
+    #[structopt(
+        long = "tag",
+        help = "The release tag to target (default is to infer from CI environment)"
+    )]
+    tag: Option<String>,
+
     #[structopt(help = "The path to the file to upload")]
     path: PathBuf,
 }
@@ -185,7 +202,7 @@ impl UploadGitHubReleaseArtifactOptions {
     fn cli(self) -> Result<(), Error> {
         use reqwest::header;
 
-        let info = GitHubInformation::new()?;
+        let info = GitHubInformation::new(self.tag)?;
         let mut client = info.make_blocking_client()?;
 
         // Make sure the file exists before we go creating the release!
