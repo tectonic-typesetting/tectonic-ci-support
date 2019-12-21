@@ -55,6 +55,7 @@ jobs:
     displayName: Upload tool to GitHub (non-Windows)
     condition: ne(variables['Agent.OS'], 'Windows_NT')
     env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
       PLATFORM: $(platform)
 
   - script: |
@@ -64,4 +65,5 @@ jobs:
     displayName: Upload tool to GitHub (Windows)
     condition: eq(variables['Agent.OS'], 'Windows_NT')
     env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
       PLATFORM: $(platform)
