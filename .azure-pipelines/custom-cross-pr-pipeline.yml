@@ -33,4 +33,4 @@ jobs:
       URL: https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64
     displayName: Install docker-buildx
   - script: |
-      docker buildx --allow security.insecure -t test custom-cross/TEST/
+      docker buildx build --allow security.insecure -t test custom-cross/TEST/
