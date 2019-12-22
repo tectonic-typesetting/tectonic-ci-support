@@ -11,12 +11,12 @@ toolprefix="@toolprefix@"
 
 exename="$(basename $0)"
 
-if [[ $exename != $rust_platform-* ]] ; then
-    echo >&2 "error: executable name ($exename) must start with \"$rust_platform-\""
+if [[ $exename != wrapped-* ]] ; then
+    echo >&2 "error: executable name ($exename) must start with \"wrapped-\""
     exit 1
 fi
 
-exename="${toolprefix}${exename#$rust_platform-}"
+exename="${toolprefix}${exename#wrapped-}"
 
 # working directory. We assume that directories of interest are bind-mounted
 # inside the /alpine prefix.

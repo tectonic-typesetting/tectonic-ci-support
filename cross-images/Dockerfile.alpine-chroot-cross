@@ -53,7 +53,9 @@ COPY qemu.sh /
 RUN /qemu.sh $qemu_arch
 
 # Set up the custom environment variables we need -- some of their names are
-# build args, so we can't use `ENV` as far as I can tell.
+# build args, so we can't use `ENV` as far as I can tell. NOTE: intentionally
+# not quoting $qemu_arch here, so that the script only gets the arch name
+# in $4 in cases when $qemu_arch has two words (like ppc64le)
 COPY 06_setup_env.sh /
 RUN sh /06_setup_env.sh $rust_platform $alpine_platform $alpine_arch $qemu_arch
 

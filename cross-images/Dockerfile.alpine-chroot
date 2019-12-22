@@ -1,0 +1,53 @@
+# Copyright 2019 The Tectonic Project
+# Licensed under the MIT License.
+
+# We do some fancy Docker gymnastics to set up an Alpine instance that then
+# becomes a chroot inside an Ubuntu install. Unlike
+# `Dockerfile.alpine-chroot-cross`, though, we don't need to install our own
+# cross-compiler or anything.
+
+FROM alpine:3.10 AS chroot
+
+ARG UID=1000
+ARG rust_platform
+ARG alpine_platform
+
+# Privileged Alpine setup: make an unprivileged user to work inside the
+# chroot. This script also sets up that user build packages, which we don't
+# need but is quick so there's no point forking the script.
+RUN apk update && apk add --update alpine-sdk
+ADD 01_alpine_priv_setup.sh /
+RUN sh /01_alpine_priv_setup.sh "$UID"
+
+# Now populate the Alpine environment with the packages Tectonic needs.
+ADD 03_alpine_populate.sh /
+RUN sh /03_alpine_populate.sh native
+
+# We're done setting up Alpine. Now switch to an Ubuntu image and embed
+# the Alpine system in it.
+FROM ubuntu:18.04
+ARG UID=1000
+ARG rust_platform
+ARG alpine_platform
+COPY --from=chroot / /alpine
+
+# Privileged Ubuntu setup
+ADD 04_ubuntu_priv_setup.sh /
+ADD enter-chroot /alpine/
+RUN sh /04_ubuntu_priv_setup.sh "$UID"
+
+# Unprivileged Ubuntu setup
+ADD toolwrapper.sh.in /alpine/home/rust/
+ADD linkwrapper.sh.in /alpine/home/rust/
+ADD --chown=rust 05_ubuntu_unpriv_setup.sh /alpine/home/rust/
+RUN sudo -iu rust sh /alpine/home/rust/05_ubuntu_unpriv_setup.sh $rust_platform $alpine_platform /usr/bin/
+
+# Set up the custom environment variables we need -- some of their names are
+# build args, so we can't use `ENV` as far as I can tell.
+COPY 06_setup_env.sh /
+RUN sh /06_setup_env.sh $rust_platform $alpine_platform native native
+
+WORKDIR /project
+ADD entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["cargo", "test", "--release", "--all"]
