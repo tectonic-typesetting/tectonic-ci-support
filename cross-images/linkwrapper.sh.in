@@ -25,4 +25,5 @@ for arg in "$@"; do
     fi
 done
 
-exec $rust_platform-g++ "${args[@]}"
+set -x
+exec wrapped-g++ "${args[@]}"
