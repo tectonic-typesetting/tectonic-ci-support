@@ -1,9 +1,7 @@
 # Copyright 2019 the Tectonic Project
 # Licensed under the MIT License.
 
-# Triggered when a pull request is issued against the master branch that
-# modifies files in the "custom-cross" subdirectory. Does a test build of that
-# Docker image.
+# DO NOT MERGE CHECKING IF DOCKER BUILDX CAN WORK
 
 trigger:
   branches:
@@ -22,11 +20,17 @@ variables:
 - template: variables.yml
 
 jobs:
-- job: build_custom_cross
+- job: test_buildx
   pool:
     vmImage: ${{ variables.linux_image }}
 
   steps:
-  - template: build-custom-cross-steps.yml
-    parameters:
-      cross_tag: ${{ variables.cross_tag }}
+  - script: |
+      mkdir -p ~/.docker/cli-plugins
+      curl -fsSL "$URL" >$HOME/.docker/cli-plugins/docker-buildx
+      chmod +x $HOME/.docker/cli-plugins/docker-buildx
+    env:
+      URL: https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64
+    displayName: Install docker-buildx
+  - script: |
+      docker buildx --allow security.insecure -t test custom-cross/TEST/
