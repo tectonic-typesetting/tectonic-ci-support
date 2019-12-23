@@ -23,6 +23,7 @@ export RUSTFLAGS="$RUSTFLAGS"
 export PKG_CONFIG_ALLOW_CROSS=1
 export RUST_TEST_THREADS=1
 export RUST_BACKTRACE=1
+export TECTONIC_PKGCONFIG_FORCE_SEMI_STATIC=1
 EOF
 
 # The OpenSSL includes are split between /usr/include (platform-independent)
