@@ -15,13 +15,21 @@ args=()
 
 for arg in "$@"; do
     if [[ $arg = *"Bdynamic"* ]]; then
-	true  # we do not want this arg
+        true  # we do not want this arg
+    elif [[ $arg = *"static-pie"* ]]; then
+        # As of rust 1.46, the Rust musl target defaults to building in static PIE mode:
+        # https://github.com/rust-lang/rust/pull/70740
+        # This seems to conflict with our hacks to get static linking with C++ code.
+        # So for now we disable this feature. (The next `if` case is also relevant.)
+        args+=("-no-pie")
+    elif [[ $arg = *"rcrt1.o"* ]]; then
+        args+=($(echo "$arg" |sed -e s/rcrt1/crt1/))
     elif [[ $arg = *"crti.o"* ]]; then
-	args+=("$arg" "$gcclibdir/crtbeginT.o" "-Bstatic")
+        args+=("$arg" "$gcclibdir/crtbeginT.o" "-Bstatic")
     elif [[ $arg = *"crtn.o"* ]]; then
-	args+=("-lgcc" "-lgcc_eh" "-lc" "$gcclibdir/crtend.o" "$arg")
+        args+=("-lgcc" "-lgcc_eh" "-lc" "$gcclibdir/crtend.o" "$arg")
     else
-	args+=("$arg")
+        args+=("$arg")
     fi
 done
 
