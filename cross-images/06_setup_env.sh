@@ -31,6 +31,14 @@ if [ "$rust_platform" = aarch64-unknown-linux-musl ] ; then
     RUSTFLAGS="$RUSTFLAGS -C link-arg=-lgcc"
 fi
 
+if [ "$rust_platform" = arm-unknown-linux-musleabihf ] ; then
+    # 2021 Jan: workaround for
+    # https://github.com/rust-lang/compiler-builtins/issues/353 . -lgcc is
+    # already at the end of the link line, which is supposed to prevent the
+    # error, so I guess we have to force the issue.
+    RUSTFLAGS="$RUSTFLAGS -C link-arg=-Wl,--allow-multiple-definition"
+fi
+
 cat <<EOF >/environ
 export PATH=/alpine/home/rust/bin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
