@@ -1,5 +1,5 @@
 #! /bin/bash
-# Copyright 2019 The Tectonic Project
+# Copyright 2019-2021 The Tectonic Project
 # Licensed under the MIT License.
 
 set -xeuo pipefail
@@ -11,6 +11,22 @@ apt-get install -y \
         qemu \
         qemu-user-static \
         sudo
+
+# for x86, we have to specify the platform as i386, but the GCC executables are
+# named as `i686-linux-gnu...`, which messes things up later. Work around with
+# some lame symlinks.
+
+if [ ${debian_platform} = i386-linux-gnu ] ; then
+    toolchain_platform=i686-linux-gnu
+    pushd /usr/bin
+
+    for t in ${toolchain_platform}-* ; do
+        alt=$(echo $t |sed -e s/${toolchain_platform}/${debian_platform}/)
+        ln -s $t $alt
+    done
+
+    popd
+fi
 
 # Must do this in two stages because mips openssl messes up amd64 openssl.
 
