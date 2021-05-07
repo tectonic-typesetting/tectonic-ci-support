@@ -1,5 +1,5 @@
 #! /bin/bash
-# Copyright 2019 The Tectonic Project
+# Copyright 2019-2021 The Tectonic Project
 # Licensed under the MIT License.
 
 # This script derived from GitHub user @dl00:
@@ -24,10 +24,8 @@ for arg in "$@"; do
         args+=("-no-pie")
     elif [[ $arg = *"rcrt1.o"* ]]; then
         args+=($(echo "$arg" |sed -e s/rcrt1/crt1/))
-    elif [[ $arg = *"crti.o"* ]]; then
-        args+=("$arg" "$gcclibdir/crtbeginT.o" "-Bstatic")
     elif [[ $arg = *"crtn.o"* ]]; then
-        args+=("-lgcc" "-lgcc_eh" "-lc" "$gcclibdir/crtend.o" "$arg")
+        args+=("-lc" "$arg")
     else
         args+=("$arg")
     fi
