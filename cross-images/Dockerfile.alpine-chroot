@@ -25,7 +25,7 @@ RUN sh /03_alpine_populate.sh native
 
 # We're done setting up Alpine. Now switch to an Ubuntu image and embed
 # the Alpine system in it.
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 ARG UID=1000
 ARG rust_platform
 ARG alpine_platform
