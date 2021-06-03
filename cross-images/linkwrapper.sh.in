@@ -7,6 +7,7 @@
 
 rust_platform="@rust_platform@"
 os_platform="@os_platform@"
+force_crt="@force_crt@"
 
 gcclibdir="$(echo /alpine/usr/lib/gcc/$os_platform/*/crtbeginT.o)"
 gcclibdir="${gcclibdir%/crtbeginT.o}"
@@ -24,8 +25,16 @@ for arg in "$@"; do
         args+=("-no-pie")
     elif [[ $arg = *"rcrt1.o"* ]]; then
         args+=($(echo "$arg" |sed -e s/rcrt1/crt1/))
+    elif [[ $arg = *"crti.o"* ]]; then
+        if $force_crt ; then
+            args+=("$arg" "$gcclibdir/crtbeginT.o" "-Bstatic")
+        fi
     elif [[ $arg = *"crtn.o"* ]]; then
-        args+=("-lc" "$arg")
+        if $force_crt ; then
+            args+=("-lgcc" "-lgcc_eh" "-lc" "$gcclibdir/crtend.o" "$arg")
+        else
+            args+=("-lc" "$arg")
+        fi
     else
         args+=("$arg")
     fi
