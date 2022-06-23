@@ -1,10 +1,10 @@
-# Copyright 2019 The Tectonic Project
+# Copyright 2019-2022 The Tectonic Project
 # Licensed under the MIT License.
 
 # We do some fancy Docker gymnastics to set up an Alpine instance that then
 # becomes a chroot inside an Ubuntu install.
 
-FROM alpine:3.10 AS chroot
+FROM alpine:3.16 AS chroot
 
 ARG UID=1000
 ARG rust_platform
@@ -13,7 +13,7 @@ ARG alpine_arch
 ARG qemu_arch
 
 # Privileged Alpine setup: make a user that will build the desired cross compiler.
-RUN apk update && apk add --update alpine-sdk
+RUN apk update && apk add --update alpine-sdk sudo
 ADD 01_alpine_priv_setup.sh /
 RUN sh /01_alpine_priv_setup.sh "$UID"
 

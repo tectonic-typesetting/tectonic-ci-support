@@ -1,4 +1,4 @@
-# Copyright 2019 The Tectonic Project
+# Copyright 2019-2022 The Tectonic Project
 # Licensed under the MIT License.
 
 # We do some fancy Docker gymnastics to set up an Alpine instance that then
@@ -6,16 +6,16 @@
 # `Dockerfile.alpine-chroot-cross`, though, we don't need to install our own
 # cross-compiler or anything.
 
-FROM alpine:3.10 AS chroot
+FROM alpine:3.16 AS chroot
 
 ARG UID=1000
 ARG rust_platform
 ARG alpine_platform
 
 # Privileged Alpine setup: make an unprivileged user to work inside the
-# chroot. This script also sets up that user build packages, which we don't
+# chroot. This script also sets up that user to build packages, which we don't
 # need but is quick so there's no point forking the script.
-RUN apk update && apk add --update alpine-sdk
+RUN apk update && apk add --update alpine-sdk sudo
 ADD 01_alpine_priv_setup.sh /
 RUN sh /01_alpine_priv_setup.sh "$UID"
 
