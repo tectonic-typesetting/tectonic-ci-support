@@ -15,6 +15,9 @@ else
     for fp in 4d07755e 524d27bb 58199dcc 58cbb476 58e4f17d ; do
         wget https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-$fp.rsa.pub
     done
+    for fp in 616a9724 ; do
+        wget https://git.alpinelinux.org/aports/plain/main/alpine-keys/alpine-devel@lists.alpinelinux.org-$fp.rsa.pub
+    done
 
     # Propagate the new keys into the sysroot and also tell it to start pulling in
     # packages from the internet.
@@ -24,9 +27,13 @@ fi
 
 # g++ is needed to get libstdc++.a, annoyingly
 apk --root $root add --no-scripts \
+    brotli-static \
     bzip2-dev \
+    bzip2-static \
     expat-dev \
+    expat-static \
     fontconfig-dev \
+    fontconfig-static \
     freetype-dev \
     freetype-static \
     g++ \
@@ -40,7 +47,9 @@ apk --root $root add --no-scripts \
     libpng-dev \
     libpng-static \
     openssl-dev \
-    zlib-dev
+    openssl-libs-static \
+    zlib-dev \
+    zlib-static
 
 if [ $TARGET_ARCH != native ] ; then
     # Let's also install those cross-compilers!
