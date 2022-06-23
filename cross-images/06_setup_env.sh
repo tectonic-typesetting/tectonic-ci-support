@@ -19,10 +19,13 @@ else
     sysroot=/alpine/home/rust/sysroot-$os_arch
 fi
 
-RUSTFLAGS="-C target-feature=+crt-static -L ${sysroot}/usr/lib"
+RUSTFLAGS="-C target-feature=+crt-static -C link-arg=-L${sysroot}/usr/lib"
 
-for tectonic_implicit_dep in bz2 expat uuid stdc++ ; do
-    RUSTFLAGS="$RUSTFLAGS -l static=${tectonic_implicit_dep}"
+for tectonic_implicit_dep in bz2 brotlidec brotlicommon expat uuid stdc++ ; do
+    # Thanks to a behavior change introduced in Rust 1.61,
+    # https://github.com/rust-lang/rust/pull/93901/ , we have to add these
+    # libraries using this approach rather than `-l static=...`.
+    RUSTFLAGS="$RUSTFLAGS -C link-arg=-l${tectonic_implicit_dep}"
 done
 
 if [ "$rust_platform" = aarch64-unknown-linux-musl ] ; then
