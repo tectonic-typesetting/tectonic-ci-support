@@ -4,7 +4,9 @@
 
 set -xeuo pipefail
 
-apt-get install -y \
+export TERM=dumb DEBIAN_FRONTEND=noninteractive
+
+apt-get install -y --no-install-recommends \
         binfmt-support \
         crossbuild-essential-${debian_arch} \
         pkg-config \
@@ -30,7 +32,7 @@ fi
 
 # Must do this in two stages because mips openssl messes up amd64 openssl.
 
-apt-get install -y \
+apt-get install -y --no-install-recommends \
         libgraphite2-dev:${debian_arch} \
         libharfbuzz-dev:${debian_arch} \
         libfontconfig1-dev:${debian_arch} \
