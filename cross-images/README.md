@@ -120,3 +120,49 @@ specifically by using a [linker wrapper script] suggested by GitHub user
 `@dl00`.
 
 [linker wrapper script]: https://github.com/rust-lang/rust/issues/36710#issuecomment-364623950
+
+
+## The `mini-aports` Tree
+
+The Alpine-based setups in this directory rely on a subtree named `mini-aports`,
+which contains a tiny slice of the Alpine Linux [aports] repository. Every so
+often, this subtree should be synced up with Alpine development.
+
+[aports]: https://github.com/alpinelinux/aports/
+
+This vendoring process involves a special branch named `vendor-aports`. This
+branch derives from a very early iteration of this repository. Its only
+purpose is to be a repository for *pristine* files copied out of the aports
+tree, using a workflow along the lines of:
+
+```
+# this repo
+git checkout vendor-aports
+rm -rf cross-images/mini-aports/main/*
+
+# aports repo
+cd ~/temp
+git clone https://github.com/alpinelinux/aports
+# ... takes a long time
+cd aports
+git checkout 3.16-stable
+cp scripts/bootstrap.sh /path/to/ci-support/cross-images/mini-aports/scripts/
+cd main
+cp -r binutils build-base fortify-headers gcc libc-dev linux-headers musl /path/to/ci-support/cross-images/mini-aports/main/
+
+# back to this repo
+cd /path/to/ci-support
+git add cross-images/mini-aports
+git commit # document source commit, date, etc.
+
+git checkout my-work-branch
+git merge vendor-aports
+# rebuild Docker containers
+```
+
+This framework sets things up so that *if needed*, we can apply patches to the
+aports tree and track them via the Git merge process. So far this has not proved
+to be necessary.
+
+If/when the aports update is demonstrated to be necessary and correct, the
+`vendor-aports` branch on GitHub should be updated.
