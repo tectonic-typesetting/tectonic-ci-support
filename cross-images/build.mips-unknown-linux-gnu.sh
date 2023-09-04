@@ -2,6 +2,10 @@
 # Copyright 2019 The Tectonic Project
 # Licensed under the MIT License.
 
+# NOTE: As of summer 2023, Rust has dropped MIPS to Tier 3 support, so it has
+# been removed from Tectonic's CI system. This file is preserved for posterity
+# but is unlikely to remain functional for long.
+
 [ -n "$IMGUID" ] || IMGUID="$(id -u)"
 rust_platform=mips-unknown-linux-gnu
 debian_platform=mips-linux-gnu
