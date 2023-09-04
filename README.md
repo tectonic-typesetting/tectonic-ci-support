@@ -17,11 +17,17 @@ copies the binary out of the container to the host.
 
 [`cross`]: https://github.com/cross-rs/cross
 
+See the `README.md` in the `custom-cross` subdirectory for more information.
+
 
 ## Custom `cross` images
 
 As a less weird thing, we need to create custom images used by [`cross`] to
 build Tectonic. Scripts to create them are in the `cross-images/` directory.
+
+See the `README.md` in the `cross-images` subdirectory for more information.
+That file documents the workflow for attempting your own cross-compilation of
+Tectonic.
 
 
 ## Old stuff
