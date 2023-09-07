@@ -9,7 +9,7 @@ ARG debian_platform
 ARG debian_arch
 ARG qemu_arch
 
-ENV TERM=dumb
+ENV TERM=dumb DEBIAN_FRONTEND=noninteractive
 RUN dpkg --add-architecture ${debian_arch} && apt-get update
 ADD 01_debian_populate.sh /
 RUN /bin/bash /01_debian_populate.sh

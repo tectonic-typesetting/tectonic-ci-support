@@ -8,6 +8,7 @@ export TERM=dumb DEBIAN_FRONTEND=noninteractive
 
 apt-get install -y --no-install-recommends \
         binfmt-support \
+        build-essential \
         crossbuild-essential-${debian_arch} \
         pkg-config \
         qemu \
