@@ -76,6 +76,30 @@ it to be necessary to add some truly disgusting hacks to the build framework to
 get things to work. Good luck!
 
 
+## Running the Images Directly
+
+You can't simply `docker run` the `crossbuild` images because they expect to be
+launched in the `cross` program's very specialized Docker environment. The
+following command line can emulate it just enough to give you a shell:
+
+```
+docker run \
+  --privileged \
+  -e HOST_UID=$(id -u) \
+  -e HOST_GID=$(id -g) \
+  -v $(pwd):/xargo \
+  -v $(pwd):/cargo \
+  -v $(pwd):/rust \
+  -v $(pwd):/target \
+  --rm -it \
+  tectonictypesetting/crossbuild:$ARCH bash
+```
+
+To set up an environment that can run an actual build, many more settings are
+needed. The most reasonable way to determine them is to run a program like `ps
+xawww` while a `./cross build` is running.
+
+
 ## Static Build Implementation
 
 A substantial chunk of Tectonic's cross-compilation support is aimed at
