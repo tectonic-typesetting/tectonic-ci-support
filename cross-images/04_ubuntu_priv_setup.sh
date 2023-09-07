@@ -11,7 +11,7 @@ cd /
 
 export TERM=dumb DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get install -y build-essential pkg-config sudo
+apt-get install -y --no-install-recommends build-essential pkg-config sudo
 apt-get clean
 rm -rf /var/lib/apt/lists/*
 

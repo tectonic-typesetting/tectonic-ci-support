@@ -10,12 +10,19 @@ if [ $TARGET_ARCH == native ] ; then
 else
     root=/home/rust/sysroot-$TARGET_ARCH
 
-    # Packages for other architectures are signed with other keys that we need to load up.
+    # Packages for different architectures are signed with different keys; we
+    # need to load up all of them.
+    #
+    # To figure out what key(s) you need for a new arch, download the relevant
+    # `APKINDEX.tar.gz` file that the build requires, e.g.
+    # `https://dl-cdn.alpinelinux.org/alpine/v3.16/community/aarch64/APKINDEX.tar.gz`.
+    # If you list the contents of that file, there should be a `.SIGN.*` file
+    # whose name indicates the signature of the key that is needed.
     cd /etc/apk/keys
     for fp in 4d07755e 524d27bb 58199dcc 58cbb476 58e4f17d ; do
         wget https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-$fp.rsa.pub
     done
-    for fp in 616a9724 ; do
+    for fp in 616a9724 616ae350 ; do
         wget https://git.alpinelinux.org/aports/plain/main/alpine-keys/alpine-devel@lists.alpinelinux.org-$fp.rsa.pub
     done
 

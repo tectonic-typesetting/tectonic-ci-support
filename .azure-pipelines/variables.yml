@@ -1,14 +1,12 @@
-# Copyright 2019-2021 the Tectonic Project
+# Copyright 2019-2023 the Tectonic Project
 # Licensed under the MIT License.
 
 # This files sets global variables that are shared among various pipelines.
 
 variables:
-  linux_image: 'ubuntu-18.04'
-  macos_image: 'macOS-10.14'
-  windows_image: 'windows-2019'
+  linux_image: 'ubuntu-latest'
   cross_tag: 'v0.1.16'
+  target_aarch64_unknown_linux_musl: 'aarch64-unknown-linux-musl'
   target_arm_unknown_linux_musleabihf: 'arm-unknown-linux-musleabihf'
   target_i686_unknown_linux_gnu: 'i686-unknown-linux-gnu'
-  target_mips_unknown_linux_gnu: 'mips-unknown-linux-gnu'
   target_x86_64_unknown_linux_musl: 'x86_64-unknown-linux-musl'
