@@ -9,5 +9,4 @@ variables:
   target_aarch64_unknown_linux_musl: 'aarch64-unknown-linux-musl'
   target_arm_unknown_linux_musleabihf: 'arm-unknown-linux-musleabihf'
   target_i686_unknown_linux_gnu: 'i686-unknown-linux-gnu'
-  target_mips_unknown_linux_gnu: 'mips-unknown-linux-gnu'
   target_x86_64_unknown_linux_musl: 'x86_64-unknown-linux-musl'
