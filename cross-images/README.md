@@ -63,6 +63,9 @@ If your new target is based on an Alpine chroot, you will probably also need to
 update `03_alpine_populate.sh` to add a new key fingerprint so that the Alpine
 install will accept the necessary support packages.
 
+You also need to add the target to `.azure-pipelines/variables.yml` to integrate
+the new architecture into the CI/CD pipeline.
+
 You will also need to add a new entry to the `Cross.toml` file in the toplevel
 [tectonic] source directory, adding a record identifying the Docker build
 container to be used for the new target.
