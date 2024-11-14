@@ -9,7 +9,7 @@ set -euo pipefail
 # need this to set up the bind mounts that will be used by our chroot:
 
 if [ ! -f /did-setup ] ; then
-    for dir in proc sys dev project target cargo xargo rust tmp etc ; do
+    for dir in proc sys dev project target cargo xargo rust tmp etc/ssl ; do
         mkdir -p /alpine/$dir
         mount --bind /$dir /alpine/$dir
         mount --make-private /alpine/$dir
