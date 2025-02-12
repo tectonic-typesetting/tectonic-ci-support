@@ -13,7 +13,8 @@ apt-get install -y --no-install-recommends \
         pkg-config \
         qemu \
         qemu-user-static \
-        sudo
+        sudo \
+        ca-certificates
 
 # for x86, we have to specify the platform as i386, but the GCC executables are
 # named as `i686-linux-gnu...`, which messes things up later. Work around with
