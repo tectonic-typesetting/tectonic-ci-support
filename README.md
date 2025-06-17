@@ -6,23 +6,9 @@ This repository contains infrastructure for providing this support.
 
 [ap]: https://azure.microsoft.com/en-us/services/devops/pipelines/
 
-
-## Custom `cross` program
-
-In order to do all sorts of tricky cross-compilation tests, we need to use a
-customized version of the [`cross`] program. The `custom-cross/` directory
-contains the files needed to create it. We do a creative/ingenious/weird/dumb
-thing where we distribute the customized binary as a Docker container that just
-copies the binary out of the container to the host.
-
-[`cross`]: https://github.com/cross-rs/cross
-
-See the `README.md` in the `custom-cross` subdirectory for more information.
-
-
 ## Custom `cross` images
 
-As a less weird thing, we need to create custom images used by [`cross`] to
+We need to create custom images used by [`cross`] to
 build Tectonic. Scripts to create them are in the `cross-images/` directory.
 
 See the `README.md` in the `cross-images` subdirectory for more information.
@@ -38,5 +24,6 @@ Check the Git history for:
 - Updated `libharfbuzz` package for old Ubuntus
 - Old CI helper tool `ttcitool`, superseded by [Cranko]
 - Custom PPC build chroot for testing Tectonic on bigendian systems
+- Custom cross build for custom docker behavior on old cross versions
 
 [Cranko]: https://pkgw.github.io/cranko/
