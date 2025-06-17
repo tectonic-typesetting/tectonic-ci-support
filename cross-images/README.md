@@ -24,9 +24,9 @@ to compile more of the tooling yourself:
    analogous if you specify a different target; all appearances of the target
    name below will likewise track your choice).
 1. Obtain a copy of the [tectonic] source code.
-1. Within the Tectonic source tree, unpack the [custom Tectonic `cross` program][1]:
+1. Install cross:
    ```
-   docker run --rm -v $(pwd):/work:rw,Z tectonictypesetting/ttcross:latest
+   cargo install cross
    ```
 1. It is often necessary to delete your entire `target` tree before a new cross
    build. If you don't, you may see an error like:
@@ -36,21 +36,19 @@ to compile more of the tooling yourself:
    This is because the containerized cross build is not smart enough to
    differentiate between build scripts built for your true host OS, and the host
    OS of the cross Docker container.
-1. Use that program to execute the cross build:
+1. Execute the cross build:
    ```
-   ./cross build --target=x86_64-unknown-linux-musl --release
+   cross build --target=x86_64-unknown-linux-musl --release
    ```
 1. The final output will be found at
    `target/x86_64-unknown-linux-musl/release/tectonic`.
-1. The aspiration is that `./cross test ...` will work, although this is often
+1. The aspiration is that `cross test ...` will work, although this is often
    dicey in cross-compilation scenarios. In order to run any cross-compiled binaries,
    you may need to have QEmu handlers registered with your kernel, which can be
    achieved conveniently with:
    ```
    docker run --rm --privileged multiarch/qemu-user-static:register --reset --credential yes
    ```
-
-[1]: ../custom-cross/README.md
 
 
 ## Adding New Targets
@@ -97,7 +95,7 @@ docker run \
 
 To set up an environment that can run an actual build, many more settings are
 needed. The most reasonable way to determine them is to run a program like `ps
-xawww` while a `./cross build` is running.
+xawww` while a `cross build` is running.
 
 
 ## Static Build Implementation
